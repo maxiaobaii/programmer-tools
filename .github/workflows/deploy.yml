@@ -18,6 +18,8 @@ jobs:
 
       - name: Install & Build
         run: |
+          node -v
+          npm -v
           npm ci
           npm run build
 
