@@ -15,10 +15,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 22
+          cache: 'npm'
 
       - name: Install & Build
         run: |
-          npm install
+          npm ci
           npm run build
 
       - name: Deploy to GitHub Pages
