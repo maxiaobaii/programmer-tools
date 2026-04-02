@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs'
 import { validateJsonSchema, isJsonType } from '../src/lib/schema.js'
 import { generateTypescript } from '../src/lib/types.js'
 import { generateJavaTypes } from '../src/lib/java.js'
-import { diffJsonValues, summarizeDiff, formatDiffValue } from '../src/lib/diff.js'
+import { diffJsonValues, summarizeDiff, formatDiffValue, buildAnnotatedSides } from '../src/lib/diff.js'
 import { parseByFormat, stringifyByFormat, getFormatExtension } from '../src/lib/convert.js'
 import { readClipboardText, downloadTextFile, pickTextFile } from '../src/lib/io.js'
 import { createEditorResetState, resetEditorWithValue } from '../src/lib/editorState.js'
@@ -480,6 +480,42 @@ test('resetEditorWithValue replaces content and bumps revision to clear native u
     value: 'sample content',
     revision: 1,
   })
+})
+
+test('LineNumberedOutput component provides line number toggle for text and HTML output panels', () => {
+  const source = readFileSync(new URL('../src/components/LineNumberedOutput.vue', import.meta.url), 'utf8')
+
+  assert.match(source, /showLineNumbers/)
+  assert.match(source, /line-gutter/)
+  assert.match(source, /v-html|innerHTML|innerText/)
+  assert.match(source, /defineProps/)
+})
+
+test('buildAnnotatedSides produces per-line type annotations for A and B views', () => {
+  const left  = { name: '张三', age: 25, city: '北京' }
+  const right = { name: '张三', age: 26, email: 'x@x.com' }
+  const items = diffJsonValues(left, right)
+  const { linesA, linesB } = buildAnnotatedSides(
+    JSON.stringify(left, null, 2),
+    JSON.stringify(right, null, 2),
+    items,
+  )
+  // age changed: both sides should have a line marked 'changed'
+  assert.ok(linesA.some((l) => l.type === 'changed'))
+  assert.ok(linesB.some((l) => l.type === 'changed'))
+  // city only in A → removed on A side
+  assert.ok(linesA.some((l) => l.type === 'removed'))
+  // email only in B → added on B side
+  assert.ok(linesB.some((l) => l.type === 'added'))
+})
+
+test('DiffTab renders side-by-side highlighted view after runDiff', () => {
+  const source = readFileSync(new URL('../src/components/DiffTab.vue', import.meta.url), 'utf8')
+  assert.match(source, /diff-line-added/)
+  assert.match(source, /diff-line-removed/)
+  assert.match(source, /diff-line-changed/)
+  assert.match(source, /linesA/)
+  assert.match(source, /linesB/)
 })
 
 test('getViewportInfo distinguishes phone, pad portrait and desktop layouts', () => {

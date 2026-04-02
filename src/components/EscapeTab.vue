@@ -37,6 +37,13 @@
         <div class="panel-header">
           <span class="panel-label">操作 & 结果</span>
           <div class="panel-actions">
+            <label class="inline-label">
+              <input
+                v-model="showLineNumbers"
+                type="checkbox"
+                style="margin-right:4px;"
+              />行号
+            </label>
             <button
               class="btn btn-primary"
               @click="escape"
@@ -63,7 +70,7 @@
             v-if="!result && !input"
             class="empty-hint"
           >
-            <p>输入内容后点击"转义"或"反转义"</p>
+            <p>输入内容后点击“转义”或“反转义”</p>
           </div>
           <div
             v-else-if="error"
@@ -73,13 +80,11 @@
               {{ error }}
             </div>
           </div>
-          <div
+          <LineNumberedOutput
             v-else
-            class="output-area"
-            style="word-break:break-all"
-          >
-            {{ result }}
-          </div>
+            :text="result"
+            :show-line-numbers="showLineNumbers"
+          />
         </div>
         <div class="status-bar">
           <span v-if="result">{{ result.length }} 字符</span>
@@ -93,10 +98,12 @@
 import { ref, inject } from 'vue'
 import { copyText } from '../utils.js'
 import ResizableLayout from './ResizableLayout.vue'
+import LineNumberedOutput from './LineNumberedOutput.vue'
 
 const input = ref('')
 const result = ref('')
 const error = ref('')
+const showLineNumbers = ref(false)
 const flash = inject('flashCopy')
 
 function escape() {

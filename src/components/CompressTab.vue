@@ -55,6 +55,13 @@
         <div class="panel-header">
           <span class="panel-label">压缩输出</span>
           <div class="panel-actions">
+            <label class="inline-label">
+              <input
+                v-model="showLineNumbers"
+                type="checkbox"
+                style="margin-right:4px;"
+              />行号
+            </label>
             <button
               class="btn btn-ghost"
               :disabled="!result"
@@ -79,13 +86,12 @@
               {{ status.error }}
             </div>
           </div>
-          <div
+          <LineNumberedOutput
             v-else
-            class="output-area"
-            style="word-break:break-all"
-          >
-            {{ result }}
-          </div>
+            :text="result"
+            :show-line-numbers="showLineNumbers"
+            extra-class=""
+          />
         </div>
         <div class="status-bar">
           <span v-if="result">{{ result.length }} 字符</span>
@@ -103,8 +109,10 @@
 import { computed, inject, ref } from 'vue'
 import { tryParseJson, copyText } from '../utils.js'
 import ResizableLayout from './ResizableLayout.vue'
+import LineNumberedOutput from './LineNumberedOutput.vue'
 
 const input = ref('')
+const showLineNumbers = ref(false)
 const flash = inject('flashCopy')
 const status = computed(() => tryParseJson(input.value.trim()))
 const result = computed(() => {

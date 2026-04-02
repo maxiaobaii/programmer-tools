@@ -120,10 +120,12 @@ import { copyText } from '../utils.js'
 import { generateTypescript } from '../lib/types.js'
 import { downloadTextFile, pickTextFile, readClipboardText } from '../lib/io.js'
 import ResizableLayout from './ResizableLayout.vue'
+import LineNumberedOutput from './LineNumberedOutput.vue'
 
 const input = ref('')
 const result = ref('')
 const error = ref('')
+const showLineNumbers = ref(false)
 const flash = inject('flashCopy')
 
 const status = computed(() => {

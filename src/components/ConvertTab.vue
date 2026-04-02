@@ -137,6 +137,7 @@ import { copyText } from '../utils.js'
 import { parseByFormat, stringifyByFormat, getFormatExtension } from '../lib/convert.js'
 import { downloadTextFile, pickTextFile, readClipboardText } from '../lib/io.js'
 import ResizableLayout from './ResizableLayout.vue'
+import LineNumberedOutput from './LineNumberedOutput.vue'
 
 const formatOptions = [
   { value: 'json', label: 'JSON' },
@@ -152,6 +153,7 @@ const result = ref('')
 const inputFormat = ref('json')
 const outputFormat = ref('yaml')
 const error = ref('')
+const showLineNumbers = ref(false)
 const flash = inject('flashCopy')
 
 const currentInputLabel = computed(() => formatOptions.find((item) => item.value === inputFormat.value)?.label || inputFormat.value.toUpperCase())

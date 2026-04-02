@@ -265,6 +265,43 @@ body {
   background: var(--bg-base);
 }
 
+/* ===== Line-numbered output ===== */
+.line-numbered-output {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+.line-gutter {
+  flex-shrink: 0;
+  min-width: 44px;
+  padding: 16px 0;
+  background: var(--bg-panel2);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  user-select: none;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.line-gutter-num {
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.line-numbered-output .line-content {
+  flex: 1;
+  min-width: 0;
+  /* override height:100% from .output-area so it fills flex container */
+  height: auto;
+  min-height: 100%;
+}
+
 .status-bar {
   min-height: 28px;
   background: var(--bg-panel);
@@ -534,6 +571,42 @@ body {
 .diff-chip-after {
   background: rgba(16, 185, 129, 0.08);
 }
+
+/* ===== Side-by-side diff highlight view ===== */
+.diff-side-view {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg-base);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.diff-line {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 0 16px;
+}
+
+.diff-line-added    { background: rgba(16, 185, 129, 0.15); }
+.diff-line-removed  { background: rgba(244, 63, 94, 0.15); }
+.diff-line-changed  { background: rgba(245, 158, 11, 0.15); }
+.diff-line-type_changed { background: rgba(139, 92, 246, 0.15); }
+.diff-line-placeholder  { background: var(--bg-panel2); opacity: 0.5; pointer-events: none; user-select: none; min-height: 1.7em; }
+
+.diff-legend {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin: 0 2px 0 8px;
+  vertical-align: middle;
+}
+.diff-legend-changed  { background: rgba(245, 158, 11, 0.6); }
+.diff-legend-added    { background: rgba(16, 185, 129, 0.6); }
+.diff-legend-removed  { background: rgba(244, 63, 94, 0.6); }
+.diff-legend-type     { background: rgba(139, 92, 246, 0.6); }
 
 .query-bar,
 .convert-controls {

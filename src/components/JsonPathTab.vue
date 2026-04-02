@@ -79,6 +79,15 @@
         >
           <div class="panel-header">
             <span class="panel-label">查询结果</span>
+            <div class="panel-actions">
+              <label class="inline-label">
+                <input
+                  v-model="showLineNumbers"
+                  type="checkbox"
+                  style="margin-right:4px;"
+                />行号
+              </label>
+            </div>
           </div>
           <div class="panel-body">
             <div
@@ -95,10 +104,10 @@
                 {{ error }}
               </div>
             </div>
-            <div
+            <LineNumberedOutput
               v-else
-              class="output-area"
-              v-html="highlightedResult"
+              :html="highlightedResult"
+              :show-line-numbers="showLineNumbers"
             />
           </div>
           <div class="status-bar">
@@ -118,6 +127,7 @@ import { ref, computed, inject } from 'vue'
 import { tryParseJson, highlightJson, copyText } from '../utils.js'
 import { JSONPath } from 'jsonpath-plus'
 import ResizableLayout from './ResizableLayout.vue'
+import LineNumberedOutput from './LineNumberedOutput.vue'
 
 const input = ref('')
 const query = ref('$.*')
@@ -125,6 +135,7 @@ const result = ref('')
 const error = ref('')
 const hasQueried = ref(false)
 const resultCount = ref(null)
+const showLineNumbers = ref(false)
 const flash = inject('flashCopy')
 
 const parseStatus = computed(() => tryParseJson(input.value.trim()))

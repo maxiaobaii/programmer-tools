@@ -49,6 +49,7 @@
       class="diff-layout"
       style="flex:1;overflow:hidden;"
     >
+      <!-- Side A -->
       <div class="diff-side">
         <div class="panel-header">
           <span class="panel-label">JSON A（原始）</span>
@@ -61,14 +62,29 @@
             </button>
           </div>
         </div>
+        <!-- Input mode -->
         <textarea
+          v-if="!hasRun"
           v-model="inputA"
           class="diff-editor"
           placeholder="粘贴原始 JSON..."
           spellcheck="false"
         />
+        <!-- Highlighted view after diff -->
+        <div
+          v-else
+          class="diff-side-view"
+        >
+          <span
+            v-for="(line, idx) in linesA"
+            :key="idx"
+            class="diff-line"
+            :class="lineClass(line.type)"
+          >{{ line.text || '\u00a0' }}</span>
+        </div>
       </div>
 
+      <!-- Side B -->
       <div class="diff-side">
         <div class="panel-header">
           <span class="panel-label">JSON B（修改后）</span>
@@ -81,25 +97,50 @@
             </button>
           </div>
         </div>
+        <!-- Input mode -->
         <textarea
+          v-if="!hasRun"
           v-model="inputB"
           class="diff-editor"
           placeholder="粘贴修改后的 JSON..."
           spellcheck="false"
         />
+        <!-- Highlighted view after diff -->
+        <div
+          v-else
+          class="diff-side-view"
+        >
+          <span
+            v-for="(line, idx) in linesB"
+            :key="idx"
+            class="diff-line"
+            :class="lineClass(line.type)"
+          >{{ line.text || '\u00a0' }}</span>
+        </div>
       </div>
     </div>
 
     <div class="diff-result-panel">
       <div class="panel-header">
         <span class="panel-label">差异结果</span>
+        <div
+          v-if="hasRun && !error"
+          class="panel-actions"
+        >
+          <span style="font-size:11px;color:var(--text-muted);">
+            <span class="diff-legend diff-legend-changed" /> 修改
+            <span class="diff-legend diff-legend-added" /> 新增
+            <span class="diff-legend diff-legend-removed" /> 删除
+            <span class="diff-legend diff-legend-type" /> 类型变更
+          </span>
+        </div>
       </div>
       <div class="diff-result-area">
         <div
           v-if="!hasRun"
           class="diff-placeholder"
         >
-          点击“对比”查看语义差异
+          点击"对比"查看语义差异
         </div>
         <div
           v-else-if="error"
@@ -155,7 +196,7 @@
 <script setup>
 import { inject, ref } from 'vue'
 import { tryParseJson, copyText } from '../utils.js'
-import { diffJsonValues, formatDiffValue, summarizeDiff } from '../lib/diff.js'
+import { diffJsonValues, formatDiffValue, summarizeDiff, buildAnnotatedSides } from '../lib/diff.js'
 import { downloadTextFile, pickTextFile } from '../lib/io.js'
 
 const inputA = ref('')
@@ -165,6 +206,8 @@ const diffText = ref('')
 const error = ref('')
 const hasRun = ref(false)
 const summary = ref('')
+const linesA = ref([])
+const linesB = ref([])
 const flash = inject('flashCopy')
 
 function buildDiffText(items) {
@@ -181,6 +224,8 @@ function runDiff() {
   diffItems.value = []
   diffText.value = ''
   summary.value = ''
+  linesA.value = []
+  linesB.value = []
   hasRun.value = true
 
   if (!inputA.value.trim() || !inputB.value.trim()) {
@@ -204,6 +249,13 @@ function runDiff() {
   diffItems.value = items
   summary.value = summarizeDiff(items)
   diffText.value = buildDiffText(items)
+
+  // Build per-line annotations for the side-by-side view
+  const textA = JSON.stringify(left.value, null, 2)
+  const textB = JSON.stringify(right.value, null, 2)
+  const sides = buildAnnotatedSides(textA, textB, items)
+  linesA.value = sides.linesA
+  linesB.value = sides.linesB
 }
 
 function clear() {
@@ -214,6 +266,8 @@ function clear() {
   error.value = ''
   hasRun.value = false
   summary.value = ''
+  linesA.value = []
+  linesB.value = []
 }
 
 function copy() {
@@ -258,6 +312,18 @@ function badgeClass(type) {
     changed: 'badge-warning',
     type_changed: 'badge-info',
   }[type] || 'badge-info'
+}
+
+const TYPE_CLASS = {
+  added: 'diff-line-added',
+  removed: 'diff-line-removed',
+  changed: 'diff-line-changed',
+  type_changed: 'diff-line-type_changed',
+  placeholder: 'diff-line-placeholder',
+}
+
+function lineClass(type) {
+  return TYPE_CLASS[type] || ''
 }
 
 function loadSampleA() {
