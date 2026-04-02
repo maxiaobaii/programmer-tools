@@ -898,6 +898,43 @@ select.format-select {
   cursor: not-allowed;
 }
 
+.not-found-page {
+  min-height: 100vh;
+  padding: 56px 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top, var(--accent-glow), transparent 28%),
+    var(--bg-base);
+}
+
+.not-found-card {
+  width: min(100%, 640px);
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-panel);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+}
+
+.not-found-path {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-panel2);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  word-break: break-all;
+}
+
+.not-found-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+}
+
 .tool-card-disabled:hover {
   transform: none;
   border-color: var(--border);

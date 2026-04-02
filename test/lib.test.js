@@ -192,6 +192,22 @@ test('HomePage renders disabled placeholder cards for upcoming tools', () => {
   assert.match(source, /tool-card tool-card-disabled/)
 })
 
+test('router and 404 bridge provide a dedicated not found experience on GitHub Pages', () => {
+  const routerSource = readFileSync(new URL('../src/router/index.js', import.meta.url), 'utf8')
+  const pageSource = readFileSync(new URL('../src/pages/NotFoundPage.vue', import.meta.url), 'utf8')
+  const bridgeSource = readFileSync(new URL('../public/404.html', import.meta.url), 'utf8')
+
+  assert.match(routerSource, /path:\s*'\/404'/)
+  assert.match(routerSource, /path:\s*'\/:pathMatch\(\.\*\)\*'/)
+  assert.match(routerSource, /path:\s*'\/404'/)
+  assert.match(routerSource, /from:/)
+  assert.match(pageSource, /404/)
+  assert.match(pageSource, /返回首页/)
+  assert.match(pageSource, /RouterLink|router\.replace|router\.push/)
+  assert.match(bridgeSource, /location\.replace/)
+  assert.match(bridgeSource, /#\/404/)
+})
+
 test('FormatTab renders collapsible formatted output with expand and collapse controls', () => {
   const source = readFileSync(new URL('../src/components/FormatTab.vue', import.meta.url), 'utf8')
 
