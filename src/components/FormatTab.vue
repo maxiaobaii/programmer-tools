@@ -69,6 +69,13 @@
           <span class="panel-label">格式化输出</span>
           <div class="panel-actions">
             <label class="inline-label">
+              行号
+              <input
+                v-model="showLineNumbers"
+                type="checkbox"
+              >
+            </label>
+            <label class="inline-label">
               缩进
               <select
                 v-model="indent"
@@ -126,14 +133,33 @@
           </div>
           <div
             v-else
-            class="tree-view format-tree-view"
+            class="tree-line-number-layout"
           >
-            <TreeNode
-              :data="status.value"
-              :depth="0"
-              :expanded-set="expandedSet"
-              @toggle="toggleNode"
-            />
+            <div
+              v-if="showLineNumbers"
+              ref="treeLineGutterRef"
+              class="tree-line-gutter"
+              aria-hidden="true"
+            >
+              <div
+                v-for="n in visibleLineCount"
+                :key="n"
+                class="tree-line-gutter-num"
+              >{{ n }}</div>
+            </div>
+            <div
+              ref="treeViewRef"
+              class="tree-view format-tree-view"
+              @scroll="syncTreeLineGutter"
+            >
+              <TreeNode
+                :data="status.value"
+                :depth="0"
+                :indent-size="indentSize"
+                :expanded-set="expandedSet"
+                @toggle="toggleNode"
+              />
+            </div>
           </div>
         </div>
         <div class="status-bar">
@@ -154,14 +180,24 @@ import TreeNode from './TreeNode.vue'
 
 const editorState = ref(createEditorResetState(''))
 const indent = ref(2)
+const showLineNumbers = ref(false)
 const flash = inject('flashCopy')
 const expandedSet = ref(new Set(['root']))
+const treeViewRef = ref(null)
+const treeLineGutterRef = ref(null)
 
 const status = computed(() => tryParseJson(editorState.value.value.trim()))
 const result = computed(() => {
   if (!editorState.value.value.trim() || !status.value.ok) return ''
   return JSON.stringify(status.value.value, null, indent.value)
 })
+
+const visibleLineCount = computed(() => {
+  if (!status.value.ok) return 0
+  return countVisibleLines(status.value.value, 'root')
+})
+
+const indentSize = computed(() => indent.value === '\t' ? 16 : Number(indent.value) * 8)
 
 watch(status, (next) => {
   expandedSet.value = next.ok ? createExpandedPaths(next.value) : new Set(['root'])
@@ -180,6 +216,20 @@ function createExpandedPaths(value) {
 
   walk(value, 'root')
   return paths
+}
+
+function countVisibleLines(node, path) {
+  if (!node || typeof node !== 'object') return 1
+
+  let total = 1
+  const isExpanded = expandedSet.value.has(path)
+  if (!isExpanded) return total
+
+  Object.entries(node).forEach(([key, child]) => {
+    total += countVisibleLines(child, `${path}.${key}`)
+  })
+
+  return total + 1
 }
 
 function clear() {
@@ -208,6 +258,11 @@ function toggleNode(path) {
   if (next.has(path)) next.delete(path)
   else next.add(path)
   expandedSet.value = next
+}
+
+function syncTreeLineGutter() {
+  if (!treeViewRef.value || !treeLineGutterRef.value) return
+  treeLineGutterRef.value.scrollTop = treeViewRef.value.scrollTop
 }
 
 async function importJson() {

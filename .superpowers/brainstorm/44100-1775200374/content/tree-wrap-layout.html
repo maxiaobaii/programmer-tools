@@ -1,0 +1,52 @@
+<h2>Tree value 换行方式</h2>
+<p class="subtitle">A 是当前效果，B 是推荐效果。重点看长字符串 value 的换行起点是否影响 key 对齐。</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">A. 当前效果</div>
+    <div class="mockup-body" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; line-height:1.6; font-size:14px;">
+      <div style="color:#2563eb;">stepContent <span style="color:#94a3b8;">:</span> <span style="color:#b91c1c;">&quot;{&quot;apiId&quot;:10356,&quot;apiName&quot;:&quot;获取提报预测周期总览列表&quot;,&quot;envId&quot;:60,&quot;authId&quot;:31,&quot;apiPath&quot;:&quot;/budget/api/predict/cycle/...&quot;</span></div>
+      <div style="padding-left:188px;color:#b91c1c;">&quot;pathParam&quot;:{},&quot;queryParam&quot;:{&quot;pageSize&quot;:&quot;50&quot;,...}</div>
+      <div style="padding-left:188px;color:#b91c1c;">&quot;variableList&quot;:[],&quot;preRequestScript&quot;:&quot;&quot; ...&quot;</div>
+      <div style="height:12px"></div>
+      <div style="color:#2563eb;">stepName <span style="color:#94a3b8;">:</span> <span style="color:#b91c1c;">&quot;0. 获取列表并找到预算测试周期ID&quot;</span></div>
+      <div style="color:#2563eb;">createAt <span style="color:#94a3b8;">:</span> <span style="color:#b91c1c;">&quot;2026-04-03 14:17:52&quot;</span></div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">B. 推荐效果</div>
+    <div class="mockup-body" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; line-height:1.6; font-size:14px;">
+      <div>
+        <span style="color:#2563eb;">stepContent</span>
+        <span style="color:#94a3b8;">:</span>
+      </div>
+      <div style="margin-left:0;color:#b91c1c;">&quot;{&quot;apiId&quot;:10356,&quot;apiName&quot;:&quot;获取提报预测周期总览列表&quot;,&quot;envId&quot;:60,&quot;authId&quot;:31,&quot;apiPath&quot;:&quot;/budget/api/predict/cycle/...&quot;</div>
+      <div style="margin-left:0;color:#b91c1c;">&quot;pathParam&quot;:{},&quot;queryParam&quot;:{&quot;pageSize&quot;:&quot;50&quot;,...}</div>
+      <div style="margin-left:0;color:#b91c1c;">&quot;variableList&quot;:[],&quot;preRequestScript&quot;:&quot;&quot; ...&quot;</div>
+      <div style="height:12px"></div>
+      <div style="color:#2563eb;">stepName <span style="color:#94a3b8;">:</span> <span style="color:#b91c1c;">&quot;0. 获取列表并找到预算测试周期ID&quot;</span></div>
+      <div style="color:#2563eb;">createAt <span style="color:#94a3b8;">:</span> <span style="color:#b91c1c;">&quot;2026-04-03 14:17:52&quot;</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>推荐 B 的原因</h4>
+      <ul>
+        <li>后续 key 行会重新从统一列开始，对齐更稳定</li>
+        <li>长 value 不会把视觉焦点向右推得太远</li>
+        <li>实现简单，只改 `TreeNode` 的 primitive 行布局</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>代价</h4>
+      <ul>
+        <li>长 value 会比现在占更多垂直空间</li>
+        <li>短 value 也可能需要保持原行内展示，避免整体过高</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<h2>自然换行（整行流式）效果</h2>
+<p class="subtitle">这次我改成和你截图更接近的表现：<strong>整行作为一段文本流</strong>，不是把 value 放在独立列里。所以续行会回到当前节点起点，而不是继续挂在 value 列下面。</p>
+
+<div class="mockup">
+  <div class="mockup-header">Format 输出预览（整行自然换行）</div>
+  <div class="mockup-body" style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:20px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:14px; line-height:1.7; color:#111827; max-width:760px;">
+    <div style="color:#94a3b8;">▼ [</div>
+    <div style="padding-left:18px;">
+      <div style="display:flex; align-items:flex-start; gap:6px;">
+        <span style="color:#94a3b8;">▼</span>
+        <span style="color:#2563eb;">0</span>
+        <span style="color:#94a3b8;">:</span>
+        <span style="color:#94a3b8;">{</span>
+      </div>
+
+      <div style="padding-left:22px; color:#2563eb;">"id"<span style="color:#94a3b8;">: </span><span style="color:#a855f7;">null</span>,</div>
+      <div style="padding-left:22px; color:#2563eb;">"stepType"<span style="color:#94a3b8;">: </span><span style="color:#0f766e;">0</span>,</div>
+
+      <div style="padding-left:22px; min-width:0; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word;">
+        <span style="color:#2563eb;">"stepContent"</span><span style="color:#94a3b8;">: </span><span style="color:#16a34a;">"{\"apiId\":10356,\"apiName\":\"获取提报预测周期总览列表\",\"envId\":60,\"authId\":31,\"apiPath\":\"/budget/api/predict/cycle/manage/list\",\"queryParam\":{\"pageSize\":\"50\",\"testUser\":\"${test_user}\",\"pageNum\":\"1\"},\"variableList\":[],\"preRequestScript\":\"\",\"aiPreRequestScript\":false}"</span>
+      </div>
+
+      <div style="padding-left:22px; color:#2563eb; margin-top:4px;">"stepName"<span style="color:#94a3b8;">: </span><span style="color:#16a34a;">"0. 获取列表并找到预算测试周期ID"</span>,</div>
+      <div style="padding-left:22px; color:#2563eb;">"createAt"<span style="color:#94a3b8;">: </span><span style="color:#16a34a;">"2026-04-03 14:17:52"</span>,</div>
+      <div style="padding-left:22px; color:#2563eb;">"createdBy"<span style="color:#94a3b8;">: </span><span style="color:#16a34a;">"wb_shijintao"</span></div>
+      <div style="padding-left:18px; color:#94a3b8;">}</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>这次和上一版的关键区别</h4>
+      <ul>
+        <li>上一版：`key / colon / value` 是分列布局，续行还在 value 列里</li>
+        <li>这版：整行 inline 流式布局，续行回到当前节点内容起点</li>
+        <li>因此不会出现第二行从很右边继续挂着的感觉</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>实现方式</h4>
+      <ul>
+        <li>primitive 节点改成单个可换行文本容器</li>
+        <li>key、冒号、value 仍分别着色，但不再拆成 value 专属列</li>
+      </ul>
+    </div>
+  </div>
+</div>

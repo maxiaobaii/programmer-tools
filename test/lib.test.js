@@ -518,6 +518,43 @@ test('DiffTab renders side-by-side highlighted view after runDiff', () => {
   assert.match(source, /linesB/)
 })
 
+test('TreeNode keeps key and colon on one line while only wrapped string value is allowed to wrap', () => {
+  const treeSource = readFileSync(new URL('../src/components/TreeNode.vue', import.meta.url), 'utf8')
+  const styleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
+
+  assert.match(treeSource, /wrapped-string-value/)
+  assert.doesNotMatch(treeSource, /'wrapped-string-flow': isWrappedString/)
+  assert.match(styleSource, /\.wrapped-string-value\s*\{[^}]*overflow-wrap:\s*anywhere/s)
+  assert.match(styleSource, /\.wrapped-string-value\s*\{[^}]*word-break:\s*break-word/s)
+})
+
+test('FormatTab uses a real two-column gutter for tree view line numbers', () => {
+  const formatSource = readFileSync(new URL('../src/components/FormatTab.vue', import.meta.url), 'utf8')
+  const styleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
+
+  assert.match(formatSource, /tree-line-number-layout/)
+  assert.match(formatSource, /tree-line-gutter/)
+  assert.match(formatSource, /visibleLineCount/)
+  assert.match(formatSource, /@scroll="syncTreeLineGutter"/)
+  assert.match(formatSource, /ref="treeViewRef"/)
+  assert.match(formatSource, /ref="treeLineGutterRef"/)
+  assert.match(formatSource, /:indent-size="indentSize"/)
+  assert.match(formatSource, /const indentSize = computed\(\(\) => indent\.value === '\\t' \? 16 : Number\(indent\.value\) \* 8\)/)
+  assert.match(styleSource, /\.tree-line-number-layout/)
+  assert.match(styleSource, /\.tree-line-gutter/)
+  assert.doesNotMatch(styleSource, /counter-increment:\s*tree-line/)
+})
+
+test('TreeNode uses provided indentSize for depth-based line indentation', () => {
+  const treeSource = readFileSync(new URL('../src/components/TreeNode.vue', import.meta.url), 'utf8')
+  const styleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
+
+  assert.match(treeSource, /indentSize:\s*\{\s*type:\s*Number,\s*default:\s*16\s*\}/)
+  assert.match(treeSource, /paddingLeft: `\$\{props\.depth \* props\.indentSize\}px`/)
+  assert.match(treeSource, /:indent-size="indentSize"/)
+  assert.doesNotMatch(styleSource, /\.tree-node\s*\{\s*padding-left:\s*16px;\s*\}/)
+})
+
 test('getViewportInfo distinguishes phone, pad portrait and desktop layouts', () => {
   assert.equal(PHONE_MAX_WIDTH, 767)
   assert.equal(PAD_MAX_WIDTH, 1180)

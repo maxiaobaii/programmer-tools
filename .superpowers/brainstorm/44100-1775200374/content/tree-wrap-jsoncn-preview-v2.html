@@ -1,0 +1,53 @@
+<h2>Tree value 自然换行效果</h2>
+<p class="subtitle">这版不把 value 单独做块状布局，而是让它从冒号后自然开始，在可用宽度内自然折行，整体更接近常见 JSON 查看器的阅读感受。</p>
+
+<div class="mockup">
+  <div class="mockup-header">Format 输出预览（自然换行版）</div>
+  <div class="mockup-body" style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:20px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:14px; line-height:1.65; color:#111827;">
+    <div style="color:#94a3b8;">▼ [</div>
+    <div style="padding-left:18px;">
+      <div style="display:flex; align-items:flex-start; gap:6px; flex-wrap:wrap;">
+        <span style="color:#94a3b8;">▼</span>
+        <span style="color:#2563eb;">0</span>
+        <span style="color:#94a3b8;">:</span>
+        <span style="color:#94a3b8;">{</span>
+      </div>
+
+      <div style="padding-left:22px; color:#2563eb;">"id"<span style="color:#94a3b8;">: </span><span style="color:#a855f7;">null</span>,</div>
+      <div style="padding-left:22px; color:#2563eb;">"stepType"<span style="color:#94a3b8;">: </span><span style="color:#0f766e;">0</span>,</div>
+
+      <div style="padding-left:22px; display:flex; align-items:flex-start; min-width:0;">
+        <span style="color:#2563eb; flex:0 0 auto;">"stepContent"</span>
+        <span style="color:#94a3b8; flex:0 0 auto; margin:0 4px;">:</span>
+        <span style="color:#16a34a; min-width:0; white-space:pre-wrap; word-break:normal; overflow-wrap:anywhere;">"{\"apiId\":10356,\"apiName\":\"获取提报预测周期总览列表\",\"envId\":60,\"authId\":31,\"apiPath\":\"/budget/api/predict/cycle/manage/list\",\"queryParam\":{\"pageSize\":\"50\",\"testUser\":\"${test_user}\",\"pageNum\":\"1\"},\"variableList\":[],\"preRequestScript\":\"\",\"aiPreRequestScript\":false}"</span>
+      </div>
+
+      <div style="padding-left:22px; color:#2563eb; margin-top:4px;">"stepName"<span style="color:#94a3b8;">: </span><span style="color:#16a34a;">"0. 获取列表并找到预算测试周期ID"</span>,</div>
+      <div style="padding-left:22px; color:#2563eb;">"createAt"<span style="color:#94a3b8;">: </span><span style="color:#16a34a;">"2026-04-03 14:17:52"</span>,</div>
+      <div style="padding-left:22px; color:#2563eb;">"createdBy"<span style="color:#94a3b8;">: </span><span style="color:#16a34a;">"wb_shijintao"</span></div>
+      <div style="padding-left:18px; color:#94a3b8;">}</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>这版的特点</h4>
+      <ul>
+        <li>key 列保持稳定</li>
+        <li>value 从冒号后开始连续展示</li>
+        <li>换行是自然延续，不是整块另起一列</li>
+        <li>视觉上比上一个版本更接近 json.cn</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>实现方式</h4>
+      <ul>
+        <li>保留一行内的 key / colon / value 结构</li>
+        <li>只让 value 区域可收缩并自动换行</li>
+        <li>不改对象/数组节点，只改 primitive 行布局</li>
+      </ul>
+    </div>
+  </div>
+</div>
