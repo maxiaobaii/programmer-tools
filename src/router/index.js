@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomePage from '../pages/HomePage.vue'
 import JsonToolsPage from '../pages/JsonToolsPage.vue'
+import TimestampToolsPage from '../pages/TimestampToolsPage.vue'
 import NotFoundPage from '../pages/NotFoundPage.vue'
 
 export const router = createRouter({
@@ -8,6 +9,7 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'home', component: HomePage },
     { path: '/json', name: 'json-tools', component: JsonToolsPage },
+    { path: '/timestamp', name: 'timestamp-tools', component: TimestampToolsPage },
     { path: '/404', name: 'not-found', component: NotFoundPage },
     {
       path: '/:pathMatch(.*)*',

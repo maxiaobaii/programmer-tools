@@ -12,6 +12,7 @@ import { createEditorResetState, resetEditorWithValue } from '../src/lib/editorS
 import { getViewportInfo, PHONE_MAX_WIDTH, PAD_MAX_WIDTH } from '../src/lib/viewport.js'
 import { tools } from '../src/data/tools.js'
 import { highlightJava, copyText } from '../src/utils.js'
+import { parseTimestampInput, convertTimestampToDateTimes, convertDateTimeToTimestamps, formatDateTimeParts } from '../src/lib/timestamp.js'
 
 
 test('isJsonType supports array, null and integer', () => {
@@ -163,23 +164,24 @@ test('tool registry exposes homepage cards for available and upcoming tools', ()
     {
       id: 'timestamp-tools',
       title: '时间戳',
-      description: '时间戳转换与时间格式处理能力即将上线',
-      icon: 'toolbox',
-      badge: '开发中',
+      description: '时间戳转换与时间格式处理',
+      path: '/timestamp',
+      icon: 'timestamp',
+      badge: '已上线',
     },
     {
       id: 'regex-tools',
       title: 'Regex',
       description: '正则表达式测试、提取与替换能力即将上线',
-      icon: 'toolbox',
+      icon: 'regex',
       badge: '开发中',
     },
     {
       id: 'more-tools',
       title: '更多功能',
       description: '敬请期待...',
-      icon: 'toolbox',
-      badge: '开发中',
+      icon: 'more',
+      badge: '',
     },
   ])
 })
@@ -192,22 +194,80 @@ test('HomePage renders disabled placeholder cards for upcoming tools', () => {
   assert.match(source, /tool-card tool-card-disabled/)
 })
 
-test('router and 404 bridge provide a dedicated not found experience on GitHub Pages', () => {
+test('router exposes standalone timestamp tools page', () => {
   const routerSource = readFileSync(new URL('../src/router/index.js', import.meta.url), 'utf8')
-  const pageSource = readFileSync(new URL('../src/pages/NotFoundPage.vue', import.meta.url), 'utf8')
-  const bridgeSource = readFileSync(new URL('../public/404.html', import.meta.url), 'utf8')
 
-  assert.match(routerSource, /path:\s*'\/404'/)
-  assert.match(routerSource, /path:\s*'\/:pathMatch\(\.\*\)\*'/)
-  assert.match(routerSource, /path:\s*'\/404'/)
-  assert.match(routerSource, /from:/)
-  assert.match(pageSource, /404/)
-  assert.match(pageSource, /返回首页/)
-  assert.match(pageSource, /RouterLink|router\.replace|router\.push/)
-  assert.match(bridgeSource, /location\.replace/)
-  assert.match(bridgeSource, /#\/404/)
+  assert.match(routerSource, /import TimestampToolsPage from '\.\.\/pages\/TimestampToolsPage\.vue'/)
+  assert.match(routerSource, /path:\s*'\/timestamp'/)
+  assert.match(routerSource, /name:\s*'timestamp-tools'/)
 })
 
+test('TimestampToolsPage renders the standalone timestamp workbench shell', () => {
+  const source = readFileSync(new URL('../src/pages/TimestampToolsPage.vue', import.meta.url), 'utf8')
+
+  assert.match(source, /class="tool-page"/)
+  assert.match(source, /<TimestampWorkbench \/>/)
+})
+
+test('TimestampWorkbench provides current timestamp header and dual conversion tabs', () => {
+  const source = readFileSync(new URL('../src/components/TimestampWorkbench.vue', import.meta.url), 'utf8')
+  const styleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
+  const helperSource = readFileSync(new URL('../src/lib/timestamp.js', import.meta.url), 'utf8')
+
+  assert.match(source, /当前时间戳/)
+  assert.match(source, /秒\/毫秒/)
+  assert.match(source, /时间戳->日期时间|时间戳 → 日期时间/)
+  assert.match(source, /日期时间->时间戳|日期时间 → 时间戳/)
+  assert.match(helperSource, /GMT\+08:00 \(北京时间\)/)
+  assert.match(source, /convertTimestampToDateTimes/)
+  assert.match(source, /convertDateTimeToTimestamps/)
+  assert.match(source, /copyText/)
+  assert.match(styleSource, /\.timestamp-workbench/)
+  assert.match(styleSource, /\.timestamp-topbar/)
+  assert.match(styleSource, /\.timestamp-tabs/)
+})
+
+test('TimestampWorkbench keeps timestamp form hint and radio rows aligned in the right content column', () => {
+  const source = readFileSync(new URL('../src/components/TimestampWorkbench.vue', import.meta.url), 'utf8')
+  const styleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
+
+  assert.match(source, /class="timestamp-field-hint timestamp-field-content"/)
+  assert.match(source, /class="timestamp-radio-group timestamp-field-content"/)
+  assert.match(styleSource, /\.timestamp-field-content\s*\{[\s\S]*grid-column:\s*2/)
+})
+
+test('TimestampWorkbench refreshes current time immediately during timestamp actions', () => {
+  const source = readFileSync(new URL('../src/components/TimestampWorkbench.vue', import.meta.url), 'utf8')
+
+  assert.match(source, /function syncCurrentNow\(\) \{/)
+  assert.match(source, /currentNowMs\.value = Date\.now\(\)/)
+  assert.match(source, /function convertTimestamp\(\) \{[\s\S]*syncCurrentNow\(\)/)
+  assert.match(source, /function fillCurrentTimestamp\(\) \{[\s\S]*syncCurrentNow\(\)/)
+  assert.match(source, /function convertDateTime\(\) \{[\s\S]*syncCurrentNow\(\)/)
+  assert.match(source, /function fillCurrentDateTime\(\) \{[\s\S]*syncCurrentNow\(\)/)
+})
+
+
+test('timestamp conversion helpers support second millisecond and timezone-based outputs', () => {
+  assert.deepEqual(parseTimestampInput('1775213843448', 'millis'), {
+    timestampMs: 1775213843448,
+    digits: 13,
+  })
+  assert.deepEqual(parseTimestampInput('1775213843', 'seconds'), {
+    timestampMs: 1775213843000,
+    digits: 10,
+  })
+
+  const converted = convertTimestampToDateTimes(1775213843448, 'Asia/Shanghai')
+  assert.equal(converted.zonedDateTime, '2026-04-03 18:57:23')
+  assert.equal(converted.utcDateTime, '2026-04-03 10:57:23')
+
+  const timestamps = convertDateTimeToTimestamps('2026-04-03 18:50:19', '445', 'Asia/Shanghai')
+  assert.equal(timestamps.seconds, '1775213419')
+  assert.equal(timestamps.milliseconds, '1775213419445')
+
+  assert.equal(formatDateTimeParts(2026, 4, 3, 18, 50, 19), '2026-04-03 18:50:19')
+})
 test('FormatTab renders collapsible formatted output with expand and collapse controls', () => {
   const source = readFileSync(new URL('../src/components/FormatTab.vue', import.meta.url), 'utf8')
 

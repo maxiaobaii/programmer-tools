@@ -10,9 +10,10 @@ export const tools = [
   {
     id: 'timestamp-tools',
     title: '时间戳',
-    description: '时间戳转换与时间格式处理能力即将上线',
+    description: '时间戳转换与时间格式处理',
+    path: '/timestamp',
     icon: 'timestamp',
-    badge: '开发中',
+    badge: '已上线',
   },
   {
     id: 'regex-tools',
