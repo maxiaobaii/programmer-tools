@@ -1108,6 +1108,12 @@ select.format-select {
   height: 100%;
 }
 
+.tool-page-content .datetime-workbench {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
 .timestamp-workbench {
   display: flex;
   flex-direction: column;

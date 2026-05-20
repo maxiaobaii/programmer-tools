@@ -7,6 +7,7 @@ import Base64ToolsPage from '../pages/Base64ToolsPage.vue'
 import UrlEncodeToolsPage from '../pages/UrlEncodeToolsPage.vue'
 import SqlToolsPage from '../pages/SqlToolsPage.vue'
 import TextDiffPage from '../pages/TextDiffPage.vue'
+import DateTimeToolsPage from '../pages/DateTimeToolsPage.vue'
 import NotFoundPage from '../pages/NotFoundPage.vue'
 
 export const router = createRouter({
@@ -20,6 +21,7 @@ export const router = createRouter({
     { path: '/url', name: 'url-tools', component: UrlEncodeToolsPage },
     { path: '/sql', name: 'sql-tools', component: SqlToolsPage },
     { path: '/text-diff', name: 'text-diff', component: TextDiffPage },
+    { path: '/datetime', name: 'datetime-tools', component: DateTimeToolsPage },
     { path: '/404', name: 'not-found', component: NotFoundPage },
     {
       path: '/:pathMatch(.*)*',

@@ -77,6 +77,14 @@ export const tools = [
     badge: '开发中',
   },
   {
+    id: 'datetime-tools',
+    title: '日期计算',
+    description: '日期间隔计算、日期推算',
+    path: '/datetime',
+    icon: 'calendar',
+    badge: '已上线',
+  },
+  {
     id: 'more-tools',
     title: '更多功能',
     description: '敬请期待...',
